@@ -16,7 +16,8 @@ sensor_topic = "sensor_topic"
 
 registered_topics = []
 registered_devices = {}
-last_received_message = {}
+limetedkeypad_msgs={}
+sensor_msgs={}
 
 def on_connect(client, userdata, flags, rc, properties):
     # print("Connected with result code " + str(rc))
@@ -27,7 +28,6 @@ def on_connect(client, userdata, flags, rc, properties):
 
 
 def on_message(client, userdata, msg):
-    global last_received_message
     topic = msg.topic
     payload = json.loads(msg.payload.decode())
 
@@ -37,11 +37,20 @@ def on_message(client, userdata, msg):
         if device_id not in registered_devices:
             registered_devices[device_id] = {}
 
+    #add the messages received from the limitedkey topic to limetedkeypad_msgs dictionary
+    if topic == limitedkey_topic:
+        limitedkeypad_msg=msg.payload
+        limetedkeypad_msgs[limitedkeypad_msg]={}
+
+    #add the messages received from the sensor topic to sensor_msgs dictionary
+    if topic== sensor_topic:
+        sensor_msg=msg.payload
+        sensor_msgs[sensor_msg]={}
+
     #add topics to registered_topics table
     if topic not in registered_topics:
         registered_topics.append(topic)
     
-    last_received_message = msg
 
 
 
@@ -94,10 +103,17 @@ while True:
             print(topic)
         topic_input = input("Please choose a topic: ")
         if topic_input in registered_topics:
-            if topic_input == last_received_message.topic:
-                print("Last message payload:", last_received_message.payload.decode())
-            else:
-                print(f"No message received yet for topic {topic_input}.")
+
+            if topic_input == limitedkey_topic:
+                for keypadmsg in limetedkeypad_msgs:
+                    print(keypadmsg)
+
+            elif topic_input == sensor_topic:
+                for sensormsg in sensor_msgs:
+                    print(sensormsg)
+            elif topic_input == registration_devices_topic:
+                for device in registered_devices:
+                    print(device)
         else:
          print(f"Invalid topic: {topic_input}. Please choose a valid topic.")
 
