@@ -2,10 +2,10 @@ import paho.mqtt.client as mqtt
 import json
 
 # MQTT Broker Details
-broker_address = "cottonlady422.cloud.shiftr.io"
+broker_address = "patternzebra757.cloud.shiftr.io"
 broker_port = 1883
-username = "cottonlady422"
-password = "ZxstVjOX76fqt4SO"
+username = "patternzebra757"
+password = "dl5jtYZxKbD2taNs"
 
 
 #topics
@@ -51,9 +51,6 @@ def on_message(client, userdata, msg):
     if topic not in registered_topics:
         registered_topics.append(topic)
     
-
-
-
 
 
 
