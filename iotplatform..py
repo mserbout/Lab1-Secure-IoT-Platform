@@ -7,47 +7,45 @@ broker_port = 1883
 username = "patternzebra757"
 password = "dl5jtYZxKbD2taNs"
 
-
-#topics
+# topics
 registration_devices_topic = "registration_devices"
 limitedkey_topic = "limitedkey_topic" 
 sensor_topic = "sensor_topic"
 
-
 registered_topics = []
 registered_devices = {}
-limetedkeypad_msgs={}
-sensor_msgs={}
+limetedkeypad_msgs = {}
+sensor_msgs = {}
 
 def on_connect(client, userdata, flags, rc, properties):
-    # print("Connected with result code " + str(rc))
     client.subscribe(registration_devices_topic)
     client.subscribe(limitedkey_topic)
     client.subscribe(sensor_topic)
-    
 
+def decrypt_message(encrypted_msg):
+    # Implement your decryption logic here
+    # Example: decrypted_msg = your_decryption_function(encrypted_msg)
+    decrypted_msg = encrypted_msg.decode()
+    return decrypted_msg
 
 def on_message(client, userdata, msg):
     topic = msg.topic
     payload = json.loads(msg.payload.decode())
 
-    #add the devices id to registered_devices dictionary
     if topic == registration_devices_topic:
         device_id = payload.get("device_id")
         if device_id not in registered_devices:
             registered_devices[device_id] = {}
 
-    #add the messages received from the limitedkey topic to limetedkeypad_msgs dictionary
     if topic == limitedkey_topic:
-        limitedkeypad_msg=msg.payload
-        limetedkeypad_msgs[limitedkeypad_msg]={}
+        limitedkeypad_msg = msg.payload
+        limetedkeypad_msgs[limitedkeypad_msg] = {}
 
-    #add the messages received from the sensor topic to sensor_msgs dictionary
-    if topic== sensor_topic:
-        sensor_msg=msg.payload
-        sensor_msgs[sensor_msg]={}
+    if topic == sensor_topic:
+        encrypted_sensor_msg = msg.payload
+        decrypted_sensor_msg = decrypt_message(encrypted_sensor_msg)
+        sensor_msgs[decrypted_sensor_msg] = {}
 
-    #add topics to registered_topics table
     if topic not in registered_topics:
         registered_topics.append(topic)
     
